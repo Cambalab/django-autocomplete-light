@@ -45,10 +45,11 @@ class WidgetMixin(object):
         either on page load or dynamically.
     """
 
-    def __init__(self, url=None, forward=None, *args, **kwargs):
+    def __init__(self, url=None, forward=None, use_suffix=False, *args, **kwargs):
         """Instanciate a widget with a URL and a list of fields to forward."""
         self.url = url
         self.forward = forward or []
+        self.use_suffix = use_suffix
         self.placeholder = kwargs.get("attrs", {}).get("data-placeholder")
         super(WidgetMixin, self).__init__(*args, **kwargs)
 
@@ -85,9 +86,12 @@ class WidgetMixin(object):
 
     def render_forward_conf(self, id):
         """Render forward configuration for the field."""
+        use_suffix = ''
+        if self.use_suffix:
+            use_suffix = 'use_suffix'
         if self.forward:
             return \
-                '<div style="display:none" class="dal-forward-conf" ' + \
+                '<div style="display:none" class="dal-forward-conf '+use_suffix+'" ' + \
                 'id="dal-forward-conf-for-{id}"'.format(id=id) + \
                 '>' \
                 '<script type="text/dal-forward-conf">' + \

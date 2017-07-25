@@ -5,8 +5,11 @@
                 element.attr("id");
         form = element.length > 0 ? $(element[0].form) : $();
 
-        forwardElem =
-            form.find(divSelector).find('script');
+        confElem = form.find(divSelector);
+        forwardElem = confElem.find('script');
+
+        use_suffix = confElem.hasClass("use_suffix");
+
         if (forwardElem.length === 0) {
             return;
         }
@@ -34,21 +37,32 @@
                 } else {
                     dstName = srcName;
                 }
-                // First look for this field in the inline
-                $field_selector = '[name=' + prefix + srcName + ']';
-                $field = $($field_selector);
-                if (!$field.length) {
-                    // As a fallback, look for it outside the inline
-                    $field_selector = '[name=' + srcName + ']';
+                if (use_suffix) {
+                    search_type = '[name$=';
+                } else {
+                    search_type = '[name=';
+                    // First look for this field in the inline
+                    $field_selector = search_type + prefix + srcName + ']';
                     $field = $($field_selector);
                 }
-                if ($field.length) {
+                if (typeof $field == 'undefined' || !$field.length) {
+                    // As a fallback, look for it outside the inline
+                    $field_selector = search_type + srcName + ']';
+                    $field = $($field_selector);
+                }
+                if ($field.length == 1) {
                     if ($field.attr('type') === 'checkbox')
                         forwardedData[dstName] = $field[0].checked;
                     else if ($field.attr('type') === 'radio')
                         forwardedData[dstName] = $($field_selector + ":checked").val();
                     else
                         forwardedData[dstName] = $field.val();
+                }
+                else if ($field.length > 1) {
+                    forwardedData[dstName] = []
+                    $field.each(function(){
+                        forwardedData[dstName].push($(this).val())
+                    })
                 }
             }
         });
