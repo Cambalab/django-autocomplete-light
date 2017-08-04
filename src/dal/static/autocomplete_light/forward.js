@@ -137,11 +137,11 @@
                 }
 
                 // First look for this field in the inline
-                var fieldSelector = "[name=" + prefix + srcName + "]";
+                var fieldSelector = $(":withWildcard(name, "+ prefix + srcName +")");
                 var field = $(fieldSelector);
                 if (!field.length) {
                     // As a fallback, look for it outside the inline
-                    fieldSelector = "[name=" + srcName + "]";
+                    fieldSelector = $(":withWildcard(name, " + srcName +")");
                     field = $(fieldSelector);
                 }
                 forwardedData[dstName] = getFieldValue(field);
